@@ -1,0 +1,722 @@
+openapi: 3.0.2
+servers:
+- url: /api/v1
+  description: example
+info:
+  title: 'ZidShip API Documentation'
+  version: TODO
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+security:
+  - bearerAuth: []  
+paths:
+  /token/:
+    post:
+      operationId: CreateTokenObtainPair
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              required:
+              - username
+              - password
+              properties:
+                username:
+                  type: string
+                password:
+                  type: string
+                  writeOnly: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                required:
+                - refresh
+                - access
+                properties:
+                  access:
+                    type: string
+                  refresh:
+                    type: string
+  /token/refresh/:
+    post:
+      operationId: CreateTokenRefresh
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              required:
+              - refresh
+              properties:
+                refresh:
+                  type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                required:
+                - refresh
+                properties:
+                  refresh:
+                    type: string
+  /users/:
+    get:
+      operationId: ListUsers
+      parameters: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                properties:
+                  first_name:
+                    type: string
+                    maxLength: 30
+                  last_name:
+                    type: string
+                    maxLength: 150
+                  email:
+                    type: string
+                    format: email
+                    maxLength: 254
+                  id:
+                    type: integer
+                    readOnly: true
+                  role:
+                    type: string
+                    enum:
+                    - ADMIN
+                    - DRIVER
+                    - DEVELOPER
+                  username:
+                    type: string
+    post:
+      operationId: createUser
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              required:
+              - username
+              - password
+              - role
+              properties:
+                first_name:
+                  type: string
+                  maxLength: 30
+                last_name:
+                  type: string
+                  maxLength: 150
+                email:
+                  type: string
+                  format: email
+                  maxLength: 254
+                role:
+                  type: string
+                  enum:
+                  - ADMIN
+                  - DRIVER
+                  - DEVELOPER
+                username:
+                  type: string
+                password:
+                  type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                properties:
+                  first_name:
+                    type: string
+                    maxLength: 30
+                  last_name:
+                    type: string
+                    maxLength: 150
+                  email:
+                    type: string
+                    format: email
+                    maxLength: 254
+                  id:
+                    type: integer
+                    readOnly: true
+                  role:
+                    type: string
+                    enum:
+                    - ADMIN
+                    - DRIVER
+                    - DEVELOPER
+                  username:
+                    type: string
+  /users/me/:
+    get:
+      operationId: meUser
+      parameters: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                properties:
+                  first_name:
+                    type: string
+                    maxLength: 30
+                  last_name:
+                    type: string
+                    maxLength: 150
+                  email:
+                    type: string
+                    format: email
+                    maxLength: 254
+                  id:
+                    type: integer
+                    readOnly: true
+                  role:
+                    type: string
+                    enum:
+                    - ADMIN
+                    - DRIVER
+                    - DEVELOPER
+                  username:
+                    type: string
+  /shipments/:
+    get:
+      operationId: ListShipments
+      parameters: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                required:
+                - receiver_name
+                - receiver_country
+                - receiver_address
+                - weight
+                - lat
+                - lon
+                - state
+                properties:
+                  receiver_name:
+                    type: string
+                    maxLength: 250
+                  receiver_country:
+                    type: string
+                    maxLength: 60
+                  receiver_address:
+                    type: string
+                    maxLength: 300
+                  estimated_shipping_date:
+                    type: string
+                    format: date
+                    readOnly: true
+                  state:
+                    type: string
+                    enum:
+                    - PENDING
+                    - SCHEDULED
+                    - PREPARED
+                    - DELIVERED
+                    readOnly: true
+                  tracking_id:
+                    type: string
+                    readOnly: true
+                  scheduled_at:
+                    type: string
+                    format: date
+                    nullable: true
+                  weight:
+                    type: number
+                    multipleOf: 0.01
+                  lat:
+                    type: number
+                    multipleOf: 1.0e-08
+                    maximum: 10000
+                    minimum: -10000
+                  lon:
+                    type: number
+                    multipleOf: 1.0e-08
+                    maximum: 10000
+                    minimum: -10000
+                  documents:
+                    type: array
+                    items:
+                      required: []
+                      properties:
+                        id:
+                          type: integer
+                          readOnly: true
+                        url:
+                          type: string
+                          readOnly: true
+                    readOnly: true
+    post:
+      operationId: createShipment
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              required:
+              - receiver_name
+              - receiver_country
+              - receiver_address
+              - weight
+              - lat
+              - lon
+              - title
+              properties:
+                receiver_name:
+                  type: string
+                  maxLength: 250
+                receiver_country:
+                  type: string
+                  maxLength: 60
+                title:
+                  type: string
+                receiver_address:
+                  type: string
+                  maxLength: 300
+                weight:
+                  type: number
+                  multipleOf: 0.01
+                lat:
+                  type: number
+                  multipleOf: 1.0e-08
+                  maximum: 10000
+                  minimum: -10000
+                lon:
+                  type: number
+                  multipleOf: 1.0e-08
+                  maximum: 10000
+                  minimum: -10000
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                required:
+                - receiver_name
+                - receiver_country
+                - receiver_address
+                - weight
+                - lat
+                - lon
+                properties:
+                  receiver_name:
+                    type: string
+                    maxLength: 250
+                  receiver_country:
+                    type: string
+                    maxLength: 60
+                  receiver_address:
+                    type: string
+                    maxLength: 300
+                  estimated_shipping_date:
+                    type: string
+                    format: date
+                    readOnly: true
+                  state:
+                    type: string
+                    enum:
+                    - PENDING
+                    - SCHEDULED
+                    - PREPARED
+                    - DELIVERED
+                    readOnly: true
+                  tracking_id:
+                    type: string
+                    readOnly: true
+                  scheduled_at:
+                    type: string
+                    format: date
+                    nullable: true
+                  weight:
+                    type: number
+                    multipleOf: 0.01
+                  lat:
+                    type: number
+                    multipleOf: 1.0e-08
+                    maximum: 10000
+                    minimum: -10000
+                  lon:
+                    type: number
+                    multipleOf: 1.0e-08
+                    maximum: 10000
+                    minimum: -10000
+                  documents:
+                    type: array
+                    items:
+                      required: []
+                      properties:
+                        id:
+                          type: integer
+                          readOnly: true
+                        url:
+                          type: string
+                          readOnly: true
+                    readOnly: true
+  /shipments/print/:
+    get:
+      operationId: printShipment
+      parameters:
+        - in: query
+          name: tracking_id
+          required: True
+          schema:
+            type: array
+            style: simple
+            items:
+              type: string
+          description: The Shipment's tracking id
+          collectionFormat: multi
+      responses:
+        '200':
+          description: A ZIP file with shipments' labels as PDFs
+          schema:            
+            type: file
+  /shipments/{tracking_id}/:
+    get:
+      operationId: retrieveShipment
+      parameters:
+      - name: tracking_id
+        in: path
+        required: true
+        description: ''
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                required:
+                - receiver_name
+                - receiver_country
+                - receiver_address
+                - weight
+                - lat
+                - lon
+                - documents
+                properties:
+                  receiver_name:
+                    type: string
+                    maxLength: 250
+                  receiver_country:
+                    type: string
+                    maxLength: 60
+                  receiver_address:
+                    type: string
+                    maxLength: 300
+                  estimated_shipping_date:
+                    type: string
+                    format: date
+                    readOnly: true
+                  state:
+                    type: string
+                    enum:
+                    - PENDING
+                    - SCHEDULED
+                    - PREPARED
+                    - DELIVERED
+                    readOnly: true
+                  tracking_id:
+                    type: string
+                    readOnly: true
+                  scheduled_at:
+                    type: string
+                    format: date
+                    nullable: true
+                  weight:
+                    type: number
+                    multipleOf: 0.01
+                  lat:
+                    type: number
+                    multipleOf: 1.0e-08
+                    maximum: 10000
+                    minimum: -10000
+                  lon:
+                    type: number
+                    multipleOf: 1.0e-08
+                    maximum: 10000
+                    minimum: -10000
+                  documents:
+                    type: array
+                    items:
+                      required: []
+                      properties:
+                        id:
+                          type: integer
+                          readOnly: true
+                        url:
+                          type: string
+                          readOnly: true
+                    readOnly: true
+  /shipments/{tracking_id}/estimate_delivery_date/:
+    get:
+      operationId: estimate_delivery_dateShipment
+      parameters:
+      - name: tracking_id
+        in: path
+        required: true
+        description: ''
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                required:
+                - date
+                properties:
+                  date:
+                    type: string
+  /shipments/{tracking_id}/assign_driver/{driver_id}/:
+    post:
+      operationId: assign_driverShipment
+      parameters:
+      - name: tracking_id
+        in: path
+        required: true
+        description: ''
+        schema:
+          type: string
+      - name: driver_id
+        in: path
+        required: true
+        description: ''
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                required:
+                - success
+                properties:
+                  success:
+                    type: boolean
+  /shipments/{tracking_id}/attach_documents/:
+    post:
+      operationId: attach_documentsShipment
+      parameters:
+      - name: tracking_id
+        in: path
+        required: true
+        description: 'Shipment tracking id'
+        schema:
+          type: string
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+                - documents
+              properties:
+                documents:
+                  type: array
+                  items:
+                    type: string
+                    format: binary
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                required:
+                - receiver_name
+                - receiver_country
+                - receiver_address
+                - weight
+                - lat
+                - lon
+                - documents
+                properties:
+                  receiver_name:
+                    type: string
+                    maxLength: 250
+                  receiver_country:
+                    type: string
+                    maxLength: 60
+                  receiver_address:
+                    type: string
+                    maxLength: 300
+                  estimated_shipping_date:
+                    type: string
+                    format: date
+                    readOnly: true
+                  state:
+                    type: string
+                    enum:
+                    - PENDING
+                    - SCHEDULED
+                    - PREPARED
+                    - DELIVERED
+                    readOnly: true
+                  tracking_id:
+                    type: string
+                    readOnly: true
+                  scheduled_at:
+                    type: string
+                    format: date
+                    nullable: true
+                  weight:
+                    type: number
+                    multipleOf: 0.01
+                  lat:
+                    type: number
+                    multipleOf: 1.0e-08
+                    maximum: 10000
+                    minimum: -10000
+                  lon:
+                    type: number
+                    multipleOf: 1.0e-08
+                    maximum: 10000
+                    minimum: -10000
+                  documents:
+                    type: array
+                    items:
+                      required: []
+                      properties:
+                        id:
+                          type: integer
+                          readOnly: true
+                        url:
+                          type: string
+                          readOnly: true
+                    readOnly: true
+  /shipments/{tracking_id}/schedule/:
+    post:
+      operationId: scheduleShipment
+      parameters:
+      - name: tracking_id
+        in: path
+        required: true
+        description: ''
+        schema:
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                required:
+                - success
+                - estimated_shipping_date
+                properties:
+                  success:
+                    type: boolean
+                  estimated_shipping_date:
+                    type: string
+  /shipments/{tracking_id}/update_state/:
+    post:
+      operationId: update_stateShipment
+      parameters:
+      - name: tracking_id
+        in: path
+        required: true
+        description: ''
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              required:
+              - state
+              properties:
+                state:
+                  type: string
+                  enum:
+                    - PENDING
+                    - SCHEDULED
+                    - PREPARED
+                    - DELIVERED
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                required:
+                - success
+                properties:
+                  success:
+                    type: boolean
+  /events/:
+    get:
+      operationId: ListEvents
+      parameters: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                properties:
+                  webhook:
+                    type: string
+                  max_retry:
+                    type: integer
+                  id:
+                    type: integer
+                    readOnly: true
+                  event_name:
+                    type: string
+                    enum:
+                    - SHIPMENT_STATE_CHANGED
+                  headers:
+                    type: string
+    post:
+      operationId: createEvent
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              required:
+              - event_name
+              - webhook
+              properties:
+                webhook:
+                  type: string
+                headers:
+                  type: string
+                  default: {}
+                max_retry:
+                  type: integer
+                  default: 1
+                event_name:
+                  type: string
+                  enum:
+                  - SHIPMENT_STATE_CHANGED
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                properties:
+                  max_retry:
+                    type: integer
+                  headers:
+                    type: string
+                  id:
+                    type: integer
+                    readOnly: true
+                  event_name:
+                    type: string
+                    enum:
+                    - SHIPMENT_STATE_CHANGED
+                  webhook:
+                    type: string
+

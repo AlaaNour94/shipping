@@ -1,0 +1,49 @@
+version: '3'
+
+services:
+
+  postgres:
+    image: postgres
+    environment:
+      - POSTGRES_DB=shipping_database
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    networks:
+      - zid-net
+  
+  redis:
+    image: redis
+    container_name: redis
+    ports:
+      - 3304:3304
+    networks:
+      - zid-net
+    depends_on:
+      - postgres
+  
+  web:
+    build: .
+    container_name: web
+    restart: on-failure
+    ports:
+      - 9000:9000
+    networks:
+      - zid-net
+    depends_on:
+      - redis
+  
+  worker:
+    build: .
+    container_name: worker
+    restart: on-failure
+    command: worker
+    ports:
+      - 9001:9001
+    networks:
+      - zid-net
+    depends_on:
+      - web
+
+networks:
+  zid-net:
+    external: false
